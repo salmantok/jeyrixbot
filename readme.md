@@ -5,7 +5,7 @@ jeyrixbot dibuat menggunakan [Google Apps Script](https://script.google.com) dan
 ## Konfigurasi Awal
 
 1. **Buat Bot Telegram** melalui [@BotFather](https://t.me/BotFather) dan dapatkan TOKEN.
-2. **Dapatkan OWNER_ID** dengan mengirim pesan ke [@getinfomyidbot](https://t.me/getinfomyidbot).
+2. **Dapatkan ADMIN_IDS** dengan mengirim pesan ke [@getinfomyidbot](https://t.me/getinfomyidbot).
 3. **Buat Google Spreadsheet** dan salin SHEET_ID dari URL-nya.
 4. **Pasang Webhook** dengan menjalankan fungsi `setWebhook()` dan mengganti `YOUR_WEBHOOK_URL` dengan URL Apps Script Anda.
 
@@ -14,7 +14,7 @@ jeyrixbot dibuat menggunakan [Google Apps Script](https://script.google.com) dan
 ### Variabel Utama
 
 - `TOKEN`: Token bot Telegram.
-- `OWNER_ID`: ID admin bot.
+- `ADMIN_IDS`: ID admin bot.
 - `SHEET_ID`: ID spreadsheet untuk menyimpan daftar pengguna.
 
 ### Fungsi Utama
