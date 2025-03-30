@@ -1,0 +1,15 @@
+{
+  "name": "jeyrixbot",
+  "version": "0.0.0",
+  "description": "Bot Telegram berbasis Google Apps Script untuk meneruskan pesan antara pengguna dan admin serta mendukung fitur broadcast",
+  "scripts": {
+    "dev": "prettier -w . && clasp push"
+  },
+  "author": "Salman <salmantok.dev@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salmantok/jeyrixbot.git"
+  },
+  "homepage": "https://t.me/tbot_release"
+}
