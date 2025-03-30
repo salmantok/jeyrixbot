@@ -1,6 +1,6 @@
 {
   "name": "jeyrixbot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bot Telegram berbasis Google Apps Script untuk meneruskan pesan antara pengguna dan admin serta mendukung fitur broadcast",
   "scripts": {
     "dev": "prettier -w . && clasp push"
