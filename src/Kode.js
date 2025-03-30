@@ -1,5 +1,5 @@
 const TOKEN = '';
-const OWNER_ID = '';
+const OWNER_IDS = ['', ''];
 const SHEET_ID = '';
 
 function doPost(e) {
@@ -17,7 +17,7 @@ function doPost(e) {
     return ContentService.createTextOutput('No message');
   }
 
-  const chatId = message.chat.id;
+  const chatId = String(message.chat.id); // Pastikan dalam bentuk string
   const chatType = message.chat.type;
   const messageId = message.message_id;
   const replyToMessage = message.reply_to_message;
@@ -35,37 +35,39 @@ function doPost(e) {
     .getValues()
     .map((row) => String(row[0]));
 
-  if (chatId != OWNER_ID && !users.includes(String(chatId))) {
+  if (!OWNER_IDS.includes(chatId) && !users.includes(chatId)) {
     sheet.appendRow([chatId]);
   }
 
   // Jika admin membalas pesan pengguna
-  if (chatId == OWNER_ID && replyToMessage) {
+  if (OWNER_IDS.includes(chatId) && replyToMessage) {
     const match = replyToMessage.text
       ? replyToMessage.text.match(/👤 ID: (\d+)/)
       : null;
     if (match) {
       const userId = match[1];
-      copyMessage(userId, OWNER_ID, messageId); // Menggunakan copyMessage agar tidak ada label "Diteruskan dari"
-      sendMessage(OWNER_ID, `✅ Pesan dikirim ke ${userId}`);
-      Logger.log(`✅ Admin membalas pengguna ${userId}`);
+      copyMessage(userId, chatId, messageId);
+      sendMessage(chatId, `✅ Pesan dikirim ke ${userId}`);
+      Logger.log(`✅ Admin ${chatId} membalas pengguna ${userId}`);
       return;
     }
   }
 
   // Jika admin mengirim broadcast
-  if (chatId == OWNER_ID) {
-    sendBroadcast(messageId);
-    sendMessage(OWNER_ID, '✅ Pesan dikirim ke semua pengguna.');
-    Logger.log('📢 Admin mengirim pesan ke semua pengguna.');
+  if (OWNER_IDS.includes(chatId)) {
+    sendBroadcast(messageId, chatId);
+    sendMessage(chatId, '✅ Pesan dikirim ke semua pengguna.');
+    Logger.log(`📢 Admin ${chatId} mengirim pesan ke semua pengguna.`);
     return;
   }
 
-  // Jika pengguna mengirim pesan ke bot, diteruskan ke admin
-  if (chatId != OWNER_ID) {
-    forwardMessage(OWNER_ID, chatId, messageId);
-    sendMessage(OWNER_ID, `📩 Pesan dari pengguna:\n👤 ID: ${chatId}`);
-    Logger.log(`📨 Pesan dari ${chatId} diteruskan ke admin.`);
+  // Jika pengguna mengirim pesan ke bot, diteruskan ke semua admin
+  if (!OWNER_IDS.includes(chatId)) {
+    OWNER_IDS.forEach((adminId) => {
+      forwardMessage(adminId, chatId, messageId);
+      sendMessage(adminId, `📩 Pesan dari pengguna:\n👤 ID: ${chatId}`);
+    });
+    Logger.log(`📨 Pesan dari ${chatId} diteruskan ke semua admin.`);
     return;
   }
 }
@@ -99,7 +101,7 @@ function copyMessage(toChatId, fromChatId, messageId) {
 }
 
 // Fungsi untuk mengirim broadcast ke semua pengguna tanpa "Diteruskan dari"
-function sendBroadcast(messageId) {
+function sendBroadcast(messageId, senderId) {
   const sheet = SpreadsheetApp.openById(SHEET_ID).getActiveSheet();
   const users = sheet
     .getDataRange()
@@ -107,13 +109,13 @@ function sendBroadcast(messageId) {
     .map((row) => String(row[0]));
 
   users.forEach((userId) => {
-    if (userId) {
-      copyMessage(userId, OWNER_ID, messageId);
+    if (userId && !OWNER_IDS.includes(userId)) {
+      copyMessage(userId, senderId, messageId);
       Utilities.sleep(1000);
     }
   });
 
-  Logger.log('📢 Pesan berhasil dikirim ke semua pengguna.');
+  Logger.log(`📢 Pesan dari ${senderId} berhasil dikirim ke semua pengguna.`);
 }
 
 // Fungsi untuk mengirim pesan teks
